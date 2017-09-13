@@ -68,7 +68,8 @@ export DEBIAN_FRONTEND
     apt-get install -y parallel
 %apprun parallel
     unset SINGULARITY_APPNAME
-    (/.singularity.d/actions/run; /.singularity.d/actions/run) | parallel
+    COMMAND="/.singularity.d/actions/run"
+    parallel /bin/bash ::: $COMMAND $COMMAND $COMMAND
 
 
 %appinstall time
@@ -78,4 +79,4 @@ export DEBIAN_FRONTEND
     unset SINGULARITY_APPNAME
     export TIME
     echo "COMMAND    ELAPSED_TIME_HMS    AVERAGE_MEM    FS_INPUTS    MAX_RES_SIZE_KB    FS_OUTPUTS    PERC_CPU_ALLOCATED    CPU_SECONDS_USED    W_TIMES_SWAPPED    SHARED_TEXT_KB    ELAPSED_TIME_SECONDS    NUMBER_SIGNALS_DELIVERED    AVG_UNSHARED_STACK_SIZE    SOCKET_MSG_RECEIVED    SOCKET_MSG_SENT    AVG_RESIDENT_SET_SIZE    CONTEXT_SWITCHES"
-    exec /usr/bin/time /.singularity.d/actions/run
+    exec /usr/bin/time /.singularity.d/actions/run >> /dev/null

@@ -5,8 +5,30 @@ various metrics over an analysis of interest (the container's main runscript).
 Each installed app can be thought of as a particular context to evoke the
 container's main runscript, and arguably the apps are relatively agnostic to
 the runscript. Importantly, the main image function (runscript) is not impacted
-by these supporting tools. For example, let's build the container:
+by these supporting tools. Watch an example here:
 
+[![asciicast](https://asciinema.org/a/137432.png)](https://asciinema.org/a/137432?speed=3)
+
+or continue reading for step by step explanation.
+
+
+## Building the image
+Let's first build the container. You can use the Makefile to build the image:
+
+```
+make
+
+# Does make clean followed by make build
+```
+
+or manually:
+
+```
+singularity create metrics.img
+sudo singularity bootstrap metrics.img Singularity
+```
+
+## Running the Image
 
 And now run it. This should perform the container's main function, calling it's runscript:
 
