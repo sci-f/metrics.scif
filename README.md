@@ -7,7 +7,7 @@ container's main runscript, and arguably the apps are relatively agnostic to
 the runscript. Importantly, the main image function (runscript) is not impacted
 by these supporting tools. Watch an example here:
 
-[![asciicast](https://asciinema.org/a/137432.png)](https://asciinema.org/a/137432?speed=3)
+[![asciicast](https://asciinema.org/a/137434.png)](https://asciinema.org/a/137434?speed=3)
 
 or continue reading for step by step explanation.
 
@@ -155,8 +155,29 @@ singularity run --app linter metrics.img
 ```
 
 And obviously, if the linter app accepted a command line argument to a file or
-folder, it could lint content outside of the container.
+folder, it could lint content outside of the container. For this example, the 
+broken script we were linting did terribly:'
 
+```
+singularity run --app linter metrics.img 
+
+In /scif/apps/linter/lintme.sh line 2:
+for f in  do;
+^-- SC2034: f appears unused. Verify it or export it.
+          ^-- SC1063: You need a line feed or semicolon before the 'do'.
+            ^-- SC1059: No semicolons directly after 'do'.
+
+
+In /scif/apps/linter/lintme.sh line 3:
+grep -qi hq.*mp3  && echo -e 'Foo  bar'; done
+         ^-- SC2062: Quote the grep pattern so the shell won't interpret it.
+                          ^-- SC2039: #!/bin/sh was specified, but echo flags are not standard.
+
+```
+
+You could also imagine an entire container serving as a tester, or a converter,
+or some kind of tool where it is natural for things to be packaged in modules
+or sections.
 
 ## Use Case 4: Runtime Evaluation
 In that a metric can call a runscript, it could be easy to evaluate running the
@@ -167,6 +188,10 @@ here we are creating an app to execute the same exact script in parallel.
 %apprun parallel
     COMMAND="/.singularity.d/actions/run; "
     (printf "%0.s$COMMAND" {1..4}) | parallel
+
+Hello World!
+Hello World!
+Hello World!
 ```
 
 And you might imagine a similar loop to run an analysis, and modify a runtime
