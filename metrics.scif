@@ -1,0 +1,42 @@
+%apprun main
+    exec echo "Hello World!"
+
+%appinstall custom
+    apt-get install -y lolcat fortune
+%apprun custom
+    /usr/games/fortune | /usr/games/lolcat
+    apt-get moo
+
+%appinstall strace
+    apt-get install -y strace
+%apprun strace
+    if [ $# -eq 0 ]
+        then
+        exec strace -c scif run main
+    else
+        exec strace -c scif run "$@"
+    fi
+
+%appinstall linter
+    apt-get install -y python-pip
+    pip install pylint
+%apprun linter
+    if [ $# -eq 0 ]
+        then
+        exec pylint $SCIF_APPRUN_main
+    else
+        exec pylint "$@"
+    fi
+
+%appinstall parallel
+    apt-get install -y parallel
+%apprun parallel
+    parallel /bin/bash ::: $SCIF_APPRUN_main $SCIF_APPRUN_main $SCIF_APPRUN_main
+
+%appinstall time
+    apt-get install -y time
+%apprun time
+    TIME="%C    %E    %K    %I    %M    %O    %P    %U    %W    %X    %e    %k    %p    %r    %s    %t    %w"
+    export TIME
+    echo "COMMAND    ELAPSED_TIME_HMS    AVERAGE_MEM    FS_INPUTS    MAX_RES_SIZE_KB    FS_OUTPUTS    PERC_CPU_ALLOCATED    CPU_SECONDS_USED    W_TIMES_SWAPPED    SHARED_TEXT_KB    ELAPSED_TIME_SECONDS    NUMBER_SIGNALS_DELIVERED    AVG_UNSHARED_STACK_SIZE    SOCKET_MSG_RECEIVED    SOCKET_MSG_SENT    AVG_RESIDENT_SET_SIZE    CONTEXT_SWITCHES"
+    exec /usr/bin/time scif run main >> /dev/null

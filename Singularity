@@ -1,9 +1,8 @@
 BootStrap: docker
-From: ubuntu:14.04
+From: continuumio/miniconda3
 
 #
-# singularity create container.ftw
-# sudo singularity bootstrap container.ftw Singularity
+# sudo singularity build metrics Singularity
 #
 
 %help
@@ -13,70 +12,45 @@ various metrics over an analysis of interest (the container's main runscript).
 Each installed app can be thought of as a particular context to evoke the
 container's main runscript.
 
-# List all apps
-singularity apps <container>
+    # List all apps
+    ./metrics apps
 
-# Run a specific app
-singularity run --app <app> <container>
+    # Run a specific app
+    ./metrics run <app>
 
-# Loop over all apps
-for app in $(singularity apps metrics.img); do
-    singularity run --app $app metrics.img
-done
+    # Execute primary runscript
+    ./metrics
+
+    # Loop over all apps
+    for app in $(./metrics apps); do
+        ./metrics run $app
+    done
 
 
 %runscript
-    echo "Hello World!"
+    if [ $# -eq 0 ]
+        then
+        exec /opt/conda/bin/scif --quiet run main
+    else
+        exec /opt/conda/bin/scif "$@"
+    fi
 
+%files
+    metrics.scif
+    
 %post
-    locale-gen "en_US.UTF-8"
     apt-get update
 
-%labels
-CONTAINERSFTW_TEMPLATE scif-apps
-CONTAINERSFTW_HOST containersftw
-CONTAINERSFTW_NAME metrics-ftw
-MAINTAINER Vanessasaur
+    /opt/conda/bin/pip install scif
+    /opt/conda/bin/scif install /metrics.scif
+
 
 %environment
-# Global variables
-DEBIAN_FRONTEND=noninteractive
-export DEBIAN_FRONTEND
-
-%appinstall custom
-    apt-get install -y lolcat fortune
-%apprun custom
-    /usr/games/fortune | /usr/games/lolcat
-    apt-get moo
-
-%appinstall strace
-    apt-get install -y strace
-%apprun strace
-    unset SINGULARITY_APPNAME
-    exec strace -c -t /.singularity.d/actions/run
-
-%appinstall linter
-    apt-get install -y shellcheck &&
-    echo "#!/bin/sh" > lintme.sh &&
-    echo "for f in $(ls *.m3u) do;" >> lintme.sh &&
-    echo "grep -qi hq.*mp3 $f && echo -e 'Foo $f bar'; done" >> lintme.sh 
-
-%apprun linter
-    exec shellcheck ${SINGULARITY_APPBASE}/lintme.sh
-
-%appinstall parallel
-    apt-get install -y parallel
-%apprun parallel
-    unset SINGULARITY_APPNAME
-    COMMAND="/.singularity.d/actions/run"
-    parallel /bin/bash ::: $COMMAND $COMMAND $COMMAND
-
-
-%appinstall time
-    apt-get install -y time
-%apprun time
-    TIME="%C    %E    %K    %I    %M    %O    %P    %U    %W    %X    %e    %k    %p    %r    %s    %t    %w"
-    unset SINGULARITY_APPNAME
-    export TIME
-    echo "COMMAND    ELAPSED_TIME_HMS    AVERAGE_MEM    FS_INPUTS    MAX_RES_SIZE_KB    FS_OUTPUTS    PERC_CPU_ALLOCATED    CPU_SECONDS_USED    W_TIMES_SWAPPED    SHARED_TEXT_KB    ELAPSED_TIME_SECONDS    NUMBER_SIGNALS_DELIVERED    AVG_UNSHARED_STACK_SIZE    SOCKET_MSG_RECEIVED    SOCKET_MSG_SENT    AVG_RESIDENT_SET_SIZE    CONTEXT_SWITCHES"
-    exec /usr/bin/time /.singularity.d/actions/run >> /dev/null
+    DEBIAN_FRONTEND=noninteractive
+    PURPLE="\033[95m"
+    YELLOW="\033[93m"
+    RED="\033[91m"
+    DARKRED="\033[31m"
+    CYAN="\033[36m"
+    OFF="\033[0m"
+    export PURPLE YELLOW RED DARKRED CYAN OFF DEBIAN_FRONTEND

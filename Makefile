@@ -1,8 +1,7 @@
 run: clean build
 
 clean:
-	rm -f metrics.img
+	rm -f metrics
 
 build: clean
-	singularity create metrics.img
-	sudo singularity bootstrap metrics.img Singularity
+	sudo singularity build metrics Singularity
