@@ -4,11 +4,7 @@ This is an example for a container that serves to make it easy to run
 various metrics over an analysis of interest (the container's main runscript).
 Each installed app can be thought of as a particular context to evoke the
 container's main runscript, and arguably the apps are relatively agnostic to
-the runscript. Importantly, Watch an example here:
-
-[![asciicast](https://asciinema.org/a/137434.png)](https://asciinema.org/a/137434?speed=3)
-
-and continue reading for step by step explanation.
+the runscript. Continue reading for step by step explanation.
 
 ## Building the image
 Let's first build the container. You can use the Makefile to build the image:
