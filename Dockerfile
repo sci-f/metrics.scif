@@ -20,4 +20,8 @@ RUN scif install /code/metrics.scif
 
 # SciF Entrypoint
 
-ENTRYPOINT ["scif"]
+# Entrypoint could simply be to SCIF
+# ENTRYPOINT ["scif"]
+
+# In this case, we do a custom check if the user has given arguments
+ENTRYPOINT ["/bin/bash", "/code/entrypoint.sh"]

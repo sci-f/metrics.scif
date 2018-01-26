@@ -28,29 +28,19 @@ container's main runscript.
 
 
 %runscript
-    if [ $# -eq 0 ]
-        then
-        exec /opt/conda/bin/scif --quiet run main
-    else
-        exec /opt/conda/bin/scif "$@"
-    fi
+    exec /bin/bash /entrypoint.sh
 
 %files
     metrics.scif
+    entrypoint.sh
     
 %post
     apt-get update
 
     /opt/conda/bin/pip install scif
     /opt/conda/bin/scif install /metrics.scif
-
+    chmod u+x /entrypoint.sh
 
 %environment
     DEBIAN_FRONTEND=noninteractive
-    PURPLE="\033[95m"
-    YELLOW="\033[93m"
-    RED="\033[91m"
-    DARKRED="\033[31m"
-    CYAN="\033[36m"
-    OFF="\033[0m"
-    export PURPLE YELLOW RED DARKRED CYAN OFF DEBIAN_FRONTEND
+    export DEBIAN_FRONTEND
